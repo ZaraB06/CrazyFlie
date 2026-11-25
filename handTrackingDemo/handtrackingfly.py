@@ -93,7 +93,5 @@ def land_on_elevated_surface():
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
-
-    cardiod(1)
     # slightly_more_complex_usage()
     # land_on_elevated_surface()

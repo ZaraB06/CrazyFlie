@@ -39,15 +39,6 @@ from cflib.utils import uri_helper
 
 import numpy as np
 
-class Vertex:
-    def _init_(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def _add_(self, other):
-        return self.x + other.x, self.y + other.y, self.z + other.z
-
 # URI to the Crazyflie to connect to
 # We're gonna make a pyramid thing
 uri0 = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E7')
@@ -58,29 +49,52 @@ uris = [uri0, uri1, uri2, uri3] #Defining the array for all 4 vertices
 
 z_offset = 0.2 # We add in this z offset to account for the drone init height
 
+#Defining the rotation matrices for some borderline CG stuffs
+R_x = lambda alpha: np.array(
+    [1, 0, 0],
+    [0, np.cos(alpha), -np.sin(alpha)],
+    [0, np.sin(alpha), np.cos(alpha)]
+)
+
+R_y = lambda alpha: np.array(
+    [np.cos(alpha), 0, np.sin(alpha)],
+    [0, 1, 0],
+    [-np.sin(alpha), 0, np.cos(alpha)]
+)
+
+R_z = lambda alpha: np.array(
+    [np.cos(alpha), -np.sin(alpha), 0],
+    [np.sin(alpha), np.cos(alpha), 0],
+    [0, 0, 1]
+)
+
 vertexes = [] # Vertexes defines the initial positions of for the drones
 
 for i in range(0,3):
-    v = Vertex(np.cos(i * 2 * np.pi / 3), np.cos(i * 2 * np.pi / 3), z_offset - np.sqrt(2)/2)
+    v = np.array(np.cos(i * 2 * np.pi / 3), np.cos(i * 2 * np.pi / 3), z_offset - np.sqrt(2)/2)
     vertexes.append(v)
-vertexes.append(0,0,np.sqrt(2)/2)
+vertexes.append(np.array(0,0,np.sqrt(2)/2))
 
 for vertex in vertexes:
-    vertex += Vertex(0,0,z_offset)
+    vertex += np.array(0,0,z_offset)
 
+# Initialize the vertex positions
 def initVertexPositions():
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-            # Arm the Crazyflie
-            scf.cf.supervisor.send_arming_request(True)
-            time.sleep(1.0)
-    
-            with PositionHlCommander(
-                    scf,
-                    x=0.0, y=0.0, z=0.0,
-                    default_velocity=0.3,
-                    default_height=0.5,
-                    controller=PositionHlCommander.CONTROLLER_PID) as pc:
-                        pass
+    for uriIndex in range(0, uris.len()):
+        with SyncCrazyflie(uris[uriIndex], cf=Crazyflie(rw_cache='./cache')) as scf:
+                # Arm the Crazyflie
+                scf.cf.supervisor.send_arming_request(True)
+                time.sleep(1.0)
+        
+                with PositionHlCommander(
+                        scf,
+                        x=0.0, y=0.0, z=0.0,
+                        default_velocity=0.3,
+                        default_height=0.5,
+                        controller=PositionHlCommander.CONTROLLER_PID) as pc:
+                            x, y, z = vertexes[uriIndex]
+                            pc.go_to(x, y, z, 0.5)
+                            pass
 
 def land_on_elevated_surface():
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
@@ -100,6 +114,12 @@ def land_on_elevated_surface():
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
+
+    initVertexPositions()
+
+    time.sleep(3)
+
+
 
     # slightly_more_complex_usage()
     # land_on_elevated_surface()
