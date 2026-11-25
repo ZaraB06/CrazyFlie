@@ -142,27 +142,6 @@ def rose(a, n): #a is the amplitude of the rose, n is the number of petals
                 
                     pass
 
-#Function to fly based on any polar function that the user defines
-def polarFly(polarfunc, *args, **kwargs):
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-                # Arm the Crazyflie
-                scf.cf.supervisor.send_arming_request(True)
-                time.sleep(1.0)
-        
-                with PositionHlCommander(scf, controller=PositionHlCommander.CONTROLLER_PID) as pc:
-    
-                    pc.go_to(0.0, 0.0, 1.0)
-                    for theta in range(0, 360):
-                        #Equation of a cardoid is r=a(1 + cos(theta))
-                        theta = np.deg2rad(theta) #Convert theta to radians because
-                        r = polarfunc(*args, **kwargs)
-                        x = r * np.cos(theta)
-                        y = r * np.sin(theta)
-                        pc.go_to(x, y, 1.0, 0.5)
-                    
-                        pass
-                
-
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
