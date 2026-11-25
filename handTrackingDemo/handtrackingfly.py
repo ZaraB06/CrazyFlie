@@ -38,6 +38,7 @@ from cflib.positioning.position_hl_commander import PositionHlCommander
 from cflib.utils import uri_helper
 
 import numpy as np
+import matplotlib as plt
 
 import handtrackingfly as htf #bruh my file naming stuff is wack
 
@@ -89,60 +90,6 @@ def land_on_elevated_surface():
             pc.forward(1.0)
             pc.left(1.0)
             # land() will be called on context exit, gradually lowering to default_landing_height, then stopping motors
-
-
-def simple_sequence():
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        # Arm the Crazyflie
-        scf.cf.supervisor.send_arming_request(True)
-        time.sleep(1.0)
-
-        with PositionHlCommander(scf, controller=PositionHlCommander.CONTROLLER_PID) as pc:
-            pc.forward(1.0)
-            pc.left(1.0)
-            pc.back(1.0)
-            pc.go_to(0.0, 0.0, 1.0)
-
-
-#Fly the crazyflie in the snape of a cardiod
-def cardiod(a): #a is the amplitude of the cardiod
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-            # Arm the Crazyflie
-            scf.cf.supervisor.send_arming_request(True)
-            time.sleep(1.0)
-    
-            with PositionHlCommander(scf, controller=PositionHlCommander.CONTROLLER_PID) as pc:
-
-                pc.go_to(0.0, 0.0, 1.0)
-                for theta in range(0, 360):
-                    #Equation of a cardoid is r=a(1 + cos(theta))
-                    theta = np.deg2rad(theta) #Convert theta to radians because
-                    r = a * (1 + np.cos(theta))
-                    x = r * np.cos(theta)
-                    y = r * np.sin(theta)
-                    pc.go_to(x, y, 1.0, 0.5)
-                
-                    pass
-
-def rose(a, n): #a is the amplitude of the rose, n is the number of petals
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-            # Arm the Crazyflie
-            scf.cf.supervisor.send_arming_request(True)
-            time.sleep(1.0)
-    
-            with PositionHlCommander(scf, controller=PositionHlCommander.CONTROLLER_PID) as pc:
-
-                pc.go_to(0.0, 0.0, 1.0)
-                for theta in range(0, 360):
-                    #Equation of a cardoid is r=a(1 + cos(theta))
-                    theta = np.deg2rad(theta) #Convert theta to radians because
-                    r = a * (np.cos(n*theta))
-                    x = r * np.cos(theta)
-                    y = r * np.sin(theta)
-                    pc.go_to(x, y, 1.0, 0.5)
-                
-                    pass
-
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers()

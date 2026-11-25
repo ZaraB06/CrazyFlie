@@ -139,9 +139,28 @@ def rose(a, n): #a is the amplitude of the rose, n is the number of petals
                     x = r * np.cos(theta)
                     y = r * np.sin(theta)
                     pc.go_to(x, y, 1.0, 0.5)
-                
                     pass
 
+def vortex(r_out, a, z):
+    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+            # Arm the Crazyflie
+            scf.cf.supervisor.send_arming_request(True)
+            time.sleep(1.0)
+
+            dz = 2*np.pi / z
+    
+            with PositionHlCommander(scf, controller=PositionHlCommander.CONTROLLER_PID) as pc:
+
+                pc.go_to(0.0, 0.0, z)
+                for theta in range(0, 360):
+                    #Equation of a cardoid is r=a(1 + cos(theta))
+                    theta = np.deg2rad(theta) #Convert theta to radians because
+                    r = r_out - a*theta
+                    x = r * np.cos(theta)
+                    y = r * np.sin(theta)
+                    z -= dz
+                    pc.go_to(x, y, z, 0.5)
+                    pass
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
