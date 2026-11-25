@@ -71,12 +71,12 @@ R_z = lambda alpha: np.array(
 vertexes = [] # Vertexes defines the initial positions of for the drones
 
 for i in range(0,3):
-    v = np.array(np.cos(i * 2 * np.pi / 3), np.cos(i * 2 * np.pi / 3), z_offset - np.sqrt(2)/2)
+    v = np.array([np.cos(i * 2 * np.pi / 3), np.cos(i * 2 * np.pi / 3), z_offset - np.sqrt(2)/2])
     vertexes.append(v)
-vertexes.append(np.array(0,0,np.sqrt(2)/2))
+vertexes.append(np.array([0,0,np.sqrt(2)/2]))
 
 for vertex in vertexes:
-    vertex += np.array(0,0,z_offset)
+    vertex += np.array([0,0,z_offset])
 
 # Initialize the vertex positions
 def initVertexPositions():
