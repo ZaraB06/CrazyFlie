@@ -68,15 +68,17 @@ R_z = lambda alpha: np.array(
     [0, 0, 1]
 )
 
-vertexes = [] # Vertexes defines the initial positions of for the drones
+initVertexes = [] # Vertexes defines the initial positions of for the drones
 
 for i in range(0,3):
     v = np.array([np.cos(i * 2 * np.pi / 3), np.cos(i * 2 * np.pi / 3), z_offset - np.sqrt(2)/2])
-    vertexes.append(v)
-vertexes.append(np.array([0,0,np.sqrt(2)/2]))
+    initVertexes.append(v)
+initVertexes.append(np.array([0,0,np.sqrt(2)/2]))
 
-for vertex in vertexes:
+for vertex in initVertexes:
     vertex += np.array([0,0,z_offset])
+
+vertexes = initVertexes
 
 # Initialize the vertex positions
 def initVertexPositions():
@@ -92,9 +94,11 @@ def initVertexPositions():
                         default_velocity=0.3,
                         default_height=0.5,
                         controller=PositionHlCommander.CONTROLLER_PID) as pc:
-                            x, y, z = vertexes[uriIndex]
+                            x , y, z = initVertexes[uriIndex]
                             pc.go_to(x, y, z, 0.5)
                             pass
+
+
 
 # def land_on_elevated_surface():
 #     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
