@@ -96,21 +96,21 @@ def initVertexPositions():
                             pc.go_to(x, y, z, 0.5)
                             pass
 
-def land_on_elevated_surface():
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        # Arm the Crazyflie
-        scf.cf.supervisor.send_arming_request(True)
-        time.sleep(1.0)
+# def land_on_elevated_surface():
+#     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+#         # Arm the Crazyflie
+#         scf.cf.supervisor.send_arming_request(True)
+#         time.sleep(1.0)
 
-        with PositionHlCommander(scf,
-                                 default_height=0.5,
-                                 default_velocity=0.2,
-                                 default_landing_height=0.35,
-                                 controller=PositionHlCommander.CONTROLLER_PID) as pc:
-            # fly onto a landing platform at non-zero height (ex: from floor to desk, etc)
-            pc.forward(1.0)
-            pc.left(1.0)
-            # land() will be called on context exit, gradually lowering to default_landing_height, then stopping motors
+#         with PositionHlCommander(scf,
+#                                  default_height=0.5,
+#                                  default_velocity=0.2,
+#                                  default_landing_height=0.35,
+#                                  controller=PositionHlCommander.CONTROLLER_PID) as pc:
+#             # fly onto a landing platform at non-zero height (ex: from floor to desk, etc)
+#             pc.forward(1.0)
+#             pc.left(1.0)
+#             # land() will be called on context exit, gradually lowering to default_landing_height, then stopping motors
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
